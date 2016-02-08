@@ -2,14 +2,15 @@ import pandas as pd
 from matlabconverters.loaders import strip_mat_metadata, load_mat
 import os
 
-def load_experiment(experiment_path : str) -> {}:
+
+def load_experiment(experiment_path: str) -> {}:
     experiment = {}
     for f in os.listdir(experiment_path):
-        experiment[f[:-3]] = pd.read_csv(experiment_path + f, index_col = 0)
+        experiment[f[:-3]] = pd.read_csv(experiment_path + f, index_col=0)
     return experiment
 
 
-def load_experiment_with_params_to_dataframe(directory : str, experiment_name : str) -> pd.DataFrame:
+def load_experiment_with_params_to_dataframe(directory: str, experiment_name: str) -> pd.DataFrame:
     experiment = {}
     experiment_fname = directory + "session" + experiment_name + ".mat"
     params_fname = directory + "sessionParams" + experiment_name + ".mat"
@@ -17,12 +18,14 @@ def load_experiment_with_params_to_dataframe(directory : str, experiment_name : 
     for k, v in experiment_dict.items():
         if "neuron" in k:
             df = pd.DataFrame(v)
-            df.transpose()
+            df = df.transpose()
             experiment[k] = df
-    params_dict = strip_mat_metadata(load_mat(params_fname, False))
+    params_data = strip_mat_metadata(load_mat(params_fname, False))["params"]
+    experiment["params"] = pd.DataFrame(params_data, columns=["StimOn", "SignalOn", "LeverUp", "Coh1", "Coh2"]).dropna()
+    return experiment
 
 
-def preprocess_directory_of_raw_mats(directory : str) -> None:
+def preprocess_directory_of_raw_mats(directory: str) -> None:
     for f in os.listdir(directory):
         if f[-3:] == "mat":
             if "Params" in f:
