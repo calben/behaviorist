@@ -2,6 +2,8 @@ import pandas as pd
 from matlabconverters.loaders import strip_mat_metadata, load_mat
 import os
 
+from behaviorist.util import get_session_lever_delay, get_session_lever_success
+
 
 def load_experiment(experiment_path: str) -> {}:
     experiment = {}
@@ -17,12 +19,12 @@ def load_experiment_with_params_to_dataframe(directory: str, experiment_name: st
     experiment_dict = strip_mat_metadata(load_mat(experiment_fname, False))
     for k, v in experiment_dict.items():
         if "neuron" in k:
-            df = pd.DataFrame(v)
-            df = df.transpose()
+            df = pd.DataFrame(v).transpose()
             experiment[k] = df
     params_data = strip_mat_metadata(load_mat(params_fname, False))["params"]
     experiment["params"] = pd.DataFrame(params_data, columns=["StimOn", "SignalOn", "LeverUp", "Coh1", "Coh2"]).dropna()
     experiment["params"]["LeverDelay"] = get_session_lever_delay(experiment["params"])
+    experiment["params"]["LeverSuccess"] = get_session_lever_success(experiment["params"]["LeverDelay"])
     return experiment
 
 
@@ -42,3 +44,7 @@ def preprocess_directory_of_raw_mats(directory: str) -> None:
                 if "neuron" in k:
                     df.transpose()
                 df.to_csv(out_prefix + k + ".csv")
+
+
+def add_features_to_experiment():
+    return None

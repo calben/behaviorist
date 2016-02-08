@@ -18,4 +18,9 @@ class TestUtil(TestCase):
         b_pdf = estimate_density_function_by_window(b)
         diff = get_statistical_difference(a_pdf, b_pdf)
         print(diff)
+        assert(True)
+
+    def test_shift_session_by_signal_onset(self):
+        experiment = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
+        shift_session_by_signal_onset(experiment)
         assert(False)
