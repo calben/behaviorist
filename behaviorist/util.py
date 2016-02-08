@@ -3,12 +3,12 @@ import numpy as np
 from scipy import signal
 
 
-def get_statistical_difference(a:pd.Series, b:pd.Series) -> pd.Series:
+def get_statistical_difference(a: pd.Series, b: pd.Series) -> pd.Series:
     difference = pd.Series(a - b).apply(np.abs)
     return difference
 
 
-def estimate_density_function_by_window(a : pd.Series, window=None, bandwidth=None) -> pd.Series:
+def estimate_density_function_by_window(a: pd.Series, window=None, bandwidth=None) -> pd.Series:
     if window is None:
         window = signal.parzen
     if bandwidth is None:
@@ -18,5 +18,5 @@ def estimate_density_function_by_window(a : pd.Series, window=None, bandwidth=No
     return estimate
 
 
-def get_session_success(params:pd.DataFrame, time=250):
+def get_session_success(params: pd.DataFrame, time=250):
     success = params["StimOn"]
