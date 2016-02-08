@@ -18,5 +18,9 @@ def estimate_density_function_by_window(a: pd.Series, window=None, bandwidth=Non
     return estimate
 
 
-def get_session_success(params: pd.DataFrame, time=250):
-    success = params["StimOn"]
+def get_session_lever_delay(params: pd.DataFrame, time=250) -> pd.Series:
+    lever_delay = params["LeverUp"] - params["StimOn"]
+    lever_delay[lever_delay < 0] = 0
+    lever_delay[lever_delay > time] = 0
+    lever_delay[lever_delay > 0] = 1
+    return lever_delay

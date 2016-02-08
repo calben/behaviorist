@@ -22,6 +22,7 @@ def load_experiment_with_params_to_dataframe(directory: str, experiment_name: st
             experiment[k] = df
     params_data = strip_mat_metadata(load_mat(params_fname, False))["params"]
     experiment["params"] = pd.DataFrame(params_data, columns=["StimOn", "SignalOn", "LeverUp", "Coh1", "Coh2"]).dropna()
+    experiment["params"]["LeverDelay"] = get_session_lever_delay(experiment["params"])
     return experiment
 
 
