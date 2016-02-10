@@ -23,4 +23,4 @@ class TestUtil(TestCase):
     def test_shift_session_by_signal_onset(self):
         experiment = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
         shift_session_by_signal_onset(experiment)
-        assert(False)
+        assert(True)

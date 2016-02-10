@@ -29,14 +29,14 @@ def get_session_lever_success(lever_delay: pd.Series, time=500) -> pd.Series:
     return lever_delay
 
 
-def shift_session_by_signal_onset(experiment: dict, length=500) -> dict:
+def shift_session_by_signal_onset(experiment: dict, length_min=200, length_max=800) -> dict:
     for i in range(len(experiment["params"]["SignalOn"])):
         offset = experiment["params"]["SignalOn"][i]
-        if offset < length:
+        if offset < length_max:
             experiment["neuron1"][i][:] = 0
             experiment["neuron2"][i][:] = 0
         else:
-            experiment["neuron1"][i].shift(-(offset - length))
-            experiment["neuron2"][i].shift(-(offset - length))
-    experiment["neuron1"] = experiment["neuron1"][:][0:length]
-    experiment["neuron2"] = experiment["neuron1"][:][0:length]
+            experiment["neuron1"][i].shift(-(offset - length_max))
+            experiment["neuron2"][i].shift(-(offset - length_max))
+    experiment["neuron1"] = experiment["neuron1"][:][0:length_max]
+    experiment["neuron2"] = experiment["neuron1"][:][0:length_max]
