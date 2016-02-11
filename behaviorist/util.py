@@ -22,21 +22,9 @@ def get_session_lever_delay(params: pd.DataFrame) -> pd.Series:
     return params["LeverUp"] - params["StimOn"]
 
 
-def get_session_lever_success(lever_delay: pd.Series, time=500) -> pd.Series:
-    lever_delay[lever_delay < 0] = 0
-    lever_delay[lever_delay > time] = 0
-    lever_delay[lever_delay > 0] = 1
-    return lever_delay
-
-
-def shift_session_by_signal_onset(experiment: dict, length_min=200, length_max=800) -> dict:
-    for i in range(len(experiment["params"]["SignalOn"])):
-        offset = experiment["params"]["SignalOn"][i]
-        if offset < length_max:
-            experiment["neuron1"][i][:] = 0
-            experiment["neuron2"][i][:] = 0
-        else:
-            experiment["neuron1"][i].shift(-(offset - length_max))
-            experiment["neuron2"][i].shift(-(offset - length_max))
-    experiment["neuron1"] = experiment["neuron1"][:][0:length_max]
-    experiment["neuron2"] = experiment["neuron1"][:][0:length_max]
+def get_session_lever_success(lever_delay: pd.Series, time_min=200, time_max=800) -> pd.Series:
+    lever_success = lever_delay[:].copy()
+    lever_success[:] = 1
+    lever_success[lever_delay < time_min] = 0
+    lever_success[lever_delay > time_max] = 0
+    return lever_success

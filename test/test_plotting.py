@@ -4,6 +4,7 @@ from behaviorist.plotting import *
 
 
 class TestUtil(TestCase):
+
     def test_plot_signal_difference(self):
         experiment = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
         a = experiment["neuron1"][0][750:850]
