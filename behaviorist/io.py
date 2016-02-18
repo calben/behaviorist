@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from matlabconverters.loaders import strip_mat_metadata, load_mat
 import os
 
@@ -25,6 +26,8 @@ def load_experiment_with_params_to_dataframe(directory: str, experiment_name: st
     experiment["params"] = pd.DataFrame(params_data, columns=["StimOn", "SignalOn", "LeverUp", "Coh1", "Coh2"]).dropna()
     experiment["params"]["LeverDelay"] = get_session_lever_delay(experiment["params"])
     experiment["params"]["LeverSuccess"] = get_session_lever_success(experiment["params"]["LeverDelay"])
+    experiment["params"]["Session"] = pd.Series([experiment_name]*len(experiment["params"]))
+    experiment["params"].index.name = "Trial"
     return experiment
 
 

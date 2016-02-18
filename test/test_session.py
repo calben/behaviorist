@@ -26,4 +26,11 @@ class TestSession(TestCase):
 
 
     def test_add_full_session_values(self):
-        assert(True)
+        session = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
+        add_full_session_values(session)
+        session["leverdelay"].to_csv("session/leverdelay.csv")
+        session["leversuccess"].to_csv("session/leversuccess.csv")
+        session["params"].to_csv("session/params.csv")
+        session["features"].to_csv("session/features.csv")
+
+        assert(False)

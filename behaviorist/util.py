@@ -5,6 +5,7 @@ from scipy import signal
 
 def get_statistical_difference(a: pd.Series, b: pd.Series) -> pd.Series:
     difference = pd.Series(a - b).apply(np.abs)
+    difference = difference / difference.mean()
     return difference
 
 
@@ -19,7 +20,7 @@ def estimate_density_function_by_window(a: pd.Series, window=None, bandwidth=Non
 
 
 def get_session_lever_delay(params: pd.DataFrame) -> pd.Series:
-    return params["LeverUp"] - params["StimOn"]
+    return params["LeverUp"] - params["SignalOn"]
 
 
 def get_session_lever_success(lever_delay: pd.Series, time_min=200, time_max=800) -> pd.Series:
