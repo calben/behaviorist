@@ -22,11 +22,14 @@ for i in range(1, 8):
     # session["params"].to_csv(session_directory + "params.csv")
     # session["features"].to_csv(session_directory + "features.csv")
 
-all_sessions_params.to_csv("all_session_parameters.csv")
-all_sessions_features.to_csv("all_session_features.csv")
-all_sessions_features_filtered = all_sessions_features[all_sessions_features["distance-mean"] > 0].dropna()
-all_sessions_features_filtered.to_csv("all_session_features_filtered.csv")
-all_sessions_features_filtered.corr().to_csv("all_session_features_corr.csv")
-all_sessions_features_filtered.describe().to_csv("all_session_features_filtered_description.csv")
+if not os.path.exists("../results/"):
+    os.mkdir("../results")
 
-test_all_algorithms(load_feature_matrix_for_ml("all_session_features_filtered.csv"))
+all_sessions_params.to_csv("../results/all_session_parameters.csv")
+all_sessions_features.to_csv("../results/all_session_features.csv")
+all_sessions_features_filtered = all_sessions_features[all_sessions_features["distance-mean"] > 0].dropna()
+all_sessions_features_filtered.to_csv("../results/all_session_features_filtered.csv")
+all_sessions_features_filtered.corr().to_csv("../results/all_session_features_corr.csv")
+all_sessions_features_filtered.describe().to_csv("../results/all_session_features_filtered_description.csv")
+
+test_all_algorithms(load_feature_matrix_for_ml("../results/all_session_features_filtered.csv"))

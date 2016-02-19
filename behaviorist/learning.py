@@ -4,11 +4,6 @@ from sklearn.cross_validation import KFold
 from sklearn import cross_validation, linear_model
 import sklearn.metrics
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-from sklearn.cross_validation import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.datasets import make_moons, make_circles, make_classification
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -30,7 +25,7 @@ def load_feature_matrix_for_ml(csv: str) -> dict:
 
 def filter_feature_matrix(mat: pd.DataFrame) -> pd.DataFrame:
     mat = mat.dropna(axis=0)
-    mat = mat[mat["dist-mean"] != 0]
+    mat = mat[mat["distance-mean"] != 0]
     mat = mat.reset_index(drop=True)
     return mat
 
