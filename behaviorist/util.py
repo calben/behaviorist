@@ -3,12 +3,6 @@ import numpy as np
 from scipy import signal
 
 
-def get_statistical_difference(a: pd.Series, b: pd.Series) -> pd.Series:
-    difference = pd.Series(a - b).apply(np.abs)
-    difference = difference / difference.mean()
-    return difference
-
-
 def estimate_density_function_by_window(a: pd.Series, window=None, bandwidth=None) -> pd.Series:
     if window is None:
         window = signal.parzen

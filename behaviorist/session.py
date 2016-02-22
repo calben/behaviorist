@@ -9,20 +9,29 @@ def add_pdfs_to_session(session: dict) -> None:
 
 
 def add_statistical_differences_to_session(session: dict) -> None:
-    session["statisticaldifferences"] = session["neuron1pdf"] - session["neuron2pdf"]
+    df = session["neuron1pdf"] - session["neuron2pdf"]
+    df = df.abs()
+    df = df/df.mean()
+    session["statisticaldifferences"] = df
+
+
+def remove_session_resuls_without_parameters(session: dict) -> None:
+    cols_to_trim = ["neuron1", "neuron2"]
+    for col in cols_to_trim:
+        session[col] = session[col].ix[:, :(len(session["params"]) - 1)]
 
 
 def shift_session_by_signal_onset(experiment: dict, length=300) -> dict:
+    cols_to_shift = ["neuron1", "neuron2", "neuron1pdf", "neuron2pdf"]
     for i in range(len(experiment["params"]["SignalOn"])):
-        offset = experiment["params"]["SignalOn"][i]
-        if offset < length:
-            experiment["neuron1"][i][:] = 0
-            experiment["neuron2"][i][:] = 0
-        else:
-            experiment["neuron1"][i].shift(-(offset - length))
-            experiment["neuron2"][i].shift(-(offset - length))
-    experiment["neuron1"] = experiment["neuron1"][:][0:length]
-    experiment["neuron2"] = experiment["neuron2"][:][0:length]
+        offset = experiment["params"]["SignalOn"][i].astype(np.int)
+        for col in cols_to_shift:
+            if offset < length:
+                experiment[col].drop(i, axis=1, inplace=True)
+            else:
+                experiment[col][i] = experiment[col][i][offset - 300:offset].reset_index(drop=True)
+    for col in cols_to_shift:
+        experiment[col] = experiment[col][:][:length]
 
 
 def remove_null_trials_from_session(session: dict) -> None:
@@ -35,10 +44,10 @@ def add_feature_matrix_to_session(session: dict) -> None:
     df.index.name = "Trial"
     df = df.drop("count", axis=1)
     df.columns = ["distance-" + x for x in df.columns]
-    df["Session"] = pd.Series([session["params"]["Session"][0]]*len(df))
+    df["Session"] = pd.Series([session["params"]["Session"][0]] * len(df))
     df["distance-skew"] = session["statisticaldifferences"].skew()
     df["correlation"] = get_pairwise_corr_between_two_dataframes(session["neuron1pdf"], session["neuron2pdf"])
-    df["label"] = session["leversuccess"][:]
+    df["label"] = session["params"]["LeverSuccess"][:]
     session["features"] = df
 
 
@@ -50,13 +59,14 @@ def get_pairwise_corr_between_two_dataframes(a, b):
 
 
 def add_lever_values_to_session(session: dict) -> None:
-    session["leverdelay"] = get_session_lever_delay(session["params"])
-    session["leversuccess"] = get_session_lever_success(session["leverdelay"])
+    session["params"]["LeverDelay"] = get_session_lever_delay(session["params"])
+    session["params"]["LeverSuccess"] = get_session_lever_success(session["params"]["LeverDelay"])
 
 
 def add_full_session_values(session: dict) -> None:
-    shift_session_by_signal_onset(session)
+    remove_session_resuls_without_parameters(session)
     add_pdfs_to_session(session)
+    shift_session_by_signal_onset(session)
     add_statistical_differences_to_session(session)
     add_lever_values_to_session(session)
     add_feature_matrix_to_session(session)

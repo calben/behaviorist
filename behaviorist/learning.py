@@ -27,6 +27,8 @@ def filter_feature_matrix(mat: pd.DataFrame) -> pd.DataFrame:
     mat = mat.dropna(axis=0)
     mat = mat[mat["distance-mean"] != 0]
     mat = mat.reset_index(drop=True)
+    print(mat)
+    mat = mat[["label", "distance-std", "distance-75%"]]
     return mat
 
 
@@ -66,15 +68,14 @@ def run_k_cross_validation(data: dict):
 
 def test_all_algorithms(data: dict):
     names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Decision Tree",
-             "Random Forest", "AdaBoost", "Naive Bayes", "Linear Discriminant Analysis",
+             "Random Forest", "Naive Bayes", "Linear Discriminant Analysis",
              "Quadratic Discriminant Analysis"]
     classifiers = [
         KNeighborsClassifier(3),
         SVC(kernel="linear", C=0.025),
         SVC(gamma=2, C=1),
         DecisionTreeClassifier(max_depth=5),
-        RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
-        AdaBoostClassifier(),
+        RandomForestClassifier(max_depth=5, n_estimators=10, max_features=2),
         GaussianNB(),
         LinearDiscriminantAnalysis(),
         QuadraticDiscriminantAnalysis()]

@@ -6,7 +6,7 @@ import os
 all_sessions_features = pd.DataFrame()
 all_sessions_params = pd.DataFrame()
 
-for i in range(1, 8):
+for i in range(1, 2):
     session = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "%02d" % (i,))
     add_full_session_values(session)
     if(i is 1):
@@ -17,10 +17,10 @@ for i in range(1, 8):
         all_sessions_features = session["features"]
     else:
         all_sessions_features = pd.concat([all_sessions_features, session["features"]])
-    # session_directory = "session-" + "%02d" % (i,) + "/"
-    # os.mkdir(session_directory)
-    # session["params"].to_csv(session_directory + "params.csv")
-    # session["features"].to_csv(session_directory + "features.csv")
+    session_directory = "../data/session-" + "%02d" % (i,) + "/"
+    os.makedirs(session_directory, exist_ok=True)
+    for k, v in session.items():
+        v.to_csv(session_directory + k + ".csv")
 
 if not os.path.exists("../results/"):
     os.mkdir("../results")
