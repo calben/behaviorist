@@ -26,9 +26,10 @@ def load_feature_matrix_for_ml(csv: str) -> dict:
 def filter_feature_matrix(mat: pd.DataFrame) -> pd.DataFrame:
     mat = mat.dropna(axis=0)
     mat = mat[mat["distance-mean"] != 0]
+    mat = mat[mat["correlation"] > 0]
     mat = mat.reset_index(drop=True)
     print(mat)
-    mat = mat[["label", "distance-std", "distance-75%"]]
+    mat = mat[["label", "distance-std", "distance-25%", "distance-75%", "correlation-abs"]]
     return mat
 
 
@@ -66,7 +67,7 @@ def run_k_cross_validation(data: dict):
     print("Svm score:", str(pd.DataFrame(np.asarray(svm_scores)).describe()))
 
 
-def test_all_algorithms(data: dict):
+def test_all_algorithms(data: dict, output="summary"):
     names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Decision Tree",
              "Random Forest", "Naive Bayes", "Linear Discriminant Analysis",
              "Quadratic Discriminant Analysis"]
@@ -110,4 +111,5 @@ def test_all_algorithms(data: dict):
 
         summary[name] = pd.Series(result)
 
-    summary.to_csv("summary.csv")
+    summary.to_csv(output + ".csv")
+    summary.to_latex(output + ".tex")

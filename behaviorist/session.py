@@ -11,7 +11,7 @@ def add_pdfs_to_session(session: dict) -> None:
 def add_statistical_differences_to_session(session: dict) -> None:
     df = session["neuron1pdf"] - session["neuron2pdf"]
     df = df.abs()
-    df = df/df.mean()
+    df = df / df.mean()
     session["statisticaldifferences"] = df
 
 
@@ -41,20 +41,22 @@ def remove_null_trials_from_session(session: dict) -> None:
 
 def add_feature_matrix_to_session(session: dict) -> None:
     df = session["statisticaldifferences"].describe().T
+    print(df)
     df.index.name = "Trial"
     df = df.drop("count", axis=1)
     df.columns = ["distance-" + x for x in df.columns]
-    df["Session"] = pd.Series([session["params"]["Session"][0]] * len(df))
+    df["session"] = session["params"]["Session"]
     df["distance-skew"] = session["statisticaldifferences"].skew()
     df["correlation"] = get_pairwise_corr_between_two_dataframes(session["neuron1pdf"], session["neuron2pdf"])
+    df["correlation-abs"] = df["correlation"].abs()
     df["label"] = session["params"]["LeverSuccess"][:]
     session["features"] = df
 
 
 def get_pairwise_corr_between_two_dataframes(a, b):
-    corrcoefs = []
+    corrcoefs = {}
     for col in a.columns:
-        corrcoefs.append(np.abs(np.corrcoef(a[col], b[col])[0][1]))
+        corrcoefs[col] = np.corrcoef(a[col], b[col])[0][1]
     return pd.Series(corrcoefs)
 
 
