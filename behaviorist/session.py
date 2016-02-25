@@ -15,6 +15,16 @@ def add_statistical_differences_to_session(session: dict) -> None:
     session["statisticaldifferences"] = df
 
 
+def add_shuffled_pdf_and_statistical_differences_to_session(session: dict) -> None:
+    session["neuron1pdfshuffled"] = session["neuron1pdf"]
+    for col in session["neuron1pdf"].columns:
+        session["neuron1pdfshuffled"][col] = session["neuron1pdf"].sample(axis=1)
+    df = session["neuron1pdfshuffled"] - session["neuron2pdf"]
+    df = df.abs()
+    df = df / df.mean()
+    session["statisticaldifferencesshuffled"] = df
+
+
 def remove_session_resuls_without_parameters(session: dict) -> None:
     cols_to_trim = ["neuron1", "neuron2"]
     for col in cols_to_trim:
@@ -52,6 +62,19 @@ def add_feature_matrix_to_session(session: dict) -> None:
     df["label"] = session["params"]["LeverSuccess"][:]
     session["features"] = df
 
+def add_shuffled_feature_matrix_to_session(session: dict) -> None:
+    df = session["statisticaldifferencesshuffled"].describe().T
+    print(df)
+    df.index.name = "Trial"
+    df = df.drop("count", axis=1)
+    df.columns = ["distance-" + x for x in df.columns]
+    df["session"] = session["params"]["Session"]
+    df["distance-skew"] = session["statisticaldifferencesshuffled"].skew()
+    df["correlation"] = get_pairwise_corr_between_two_dataframes(session["neuron1pdfshuffled"], session["neuron2pdf"])
+    df["correlation-abs"] = df["correlation"].abs()
+    df["label"] = session["params"]["LeverSuccess"][:]
+    session["featuresshuffled"] = df
+
 
 def get_pairwise_corr_between_two_dataframes(a, b):
     corrcoefs = {}
@@ -70,5 +93,9 @@ def add_full_session_values(session: dict) -> None:
     add_pdfs_to_session(session)
     shift_session_by_signal_onset(session)
     add_statistical_differences_to_session(session)
+    add_shuffled_pdf_and_statistical_differences_to_session(session)
     add_lever_values_to_session(session)
     add_feature_matrix_to_session(session)
+    add_shuffled_feature_matrix_to_session(session)
+
+

@@ -6,7 +6,7 @@ import os
 all_sessions_features = pd.DataFrame()
 all_sessions_params = pd.DataFrame()
 
-for i in range(1, 2):
+for i in range(1, 5):
     session = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "%02d" % (i,))
     add_full_session_values(session)
     if(i is 1):
@@ -22,7 +22,9 @@ for i in range(1, 2):
     for k, v in session.items():
         v.to_csv(session_directory + k + ".csv")
     session["features"].corr().to_csv(session_directory + "features-corr.csv")
+    session["featuresshuffled"].corr().to_csv(session_directory + "features-shuffled-corr.csv")
     session["features"].describe().to_csv(session_directory + "features-describe.csv")
+    session["featuresshuffled"].describe().to_csv(session_directory + "features-shuffled-describe.csv")
 
 if not os.path.exists("../data/"):
     os.mkdir("../data/")
