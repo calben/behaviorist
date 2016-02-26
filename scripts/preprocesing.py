@@ -6,7 +6,7 @@ import os
 all_sessions_features = pd.DataFrame()
 all_sessions_params = pd.DataFrame()
 
-for i in range(1, 2):
+for i in range(1, 48):
     session = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "%02d" % (i,))
     add_full_session_values(session)
     if(i is 1):
