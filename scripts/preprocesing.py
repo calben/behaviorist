@@ -6,8 +6,8 @@ import os
 all_sessions_features = pd.DataFrame()
 all_sessions_params = pd.DataFrame()
 
-for i in range(1, 5):
-    session = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "%02d" % (i,))
+for i in range(1, 51):
+    session = load_session("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "%02d" % (i,))
     add_full_session_values(session)
     if(i is 1):
         all_sessions_params = session["params"]
@@ -20,11 +20,11 @@ for i in range(1, 5):
     session_directory = "../data/session-" + "%02d" % (i,) + "/"
     os.makedirs(session_directory, exist_ok=True)
     for k, v in session.items():
-        v.to_csv(session_directory + k + ".csv")
-    session["features"].corr().to_csv(session_directory + "features-corr.csv")
-    session["featuresshuffled"].corr().to_csv(session_directory + "features-shuffled-corr.csv")
-    session["features"].describe().to_csv(session_directory + "features-describe.csv")
-    session["featuresshuffled"].describe().to_csv(session_directory + "features-shuffled-describe.csv")
+        v.to_csv(session_directory + k + ".csv", float_format="%.4f")
+    session["features"].corr().to_csv(session_directory + "features-corr.csv", float_format="%.4f")
+    session["featuresshuffled"].corr().to_csv(session_directory + "features-shuffled-corr.csv", float_format="%.4f")
+    session["features"].describe().to_csv(session_directory + "features-describe.csv", float_format="%.4f")
+    session["featuresshuffled"].describe().to_csv(session_directory + "features-shuffled-describe.csv", float_format="%.4f")
 
 if not os.path.exists("../data/"):
     os.mkdir("../data/")

@@ -8,5 +8,5 @@ setup(
         license='',
         author='Calem Bendell',
         author_email='calem.j.bendell@gmail.com',
-        description='', requires=['scipy', 'seaborn', 'matplotlib', 'numpy']
+        description='', requires=['scipy', 'seaborn', 'matplotlib', 'numpy', 'sklearn', 'pandas']
 )

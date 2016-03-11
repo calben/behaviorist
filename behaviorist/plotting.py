@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-from behaviorist.util import *
-from scipy import signal
 import seaborn as sns
+
+from behaviorist.util import *
 
 sns.set_style("ticks")
 

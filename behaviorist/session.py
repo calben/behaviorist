@@ -1,25 +1,24 @@
-import pandas as pd
-import numpy as np
 from behaviorist.util import *
+import numpy as np
 
 
-def add_pdfs_to_session(session: dict) -> None:
-    session["neuron1pdf"] = session["neuron1"].apply(estimate_density_function_by_window)
-    session["neuron2pdf"] = session["neuron2"].apply(estimate_density_function_by_window)
+def add_des_to_session(session: dict) -> None:
+    session["neuron1de"] = session["neuron1"].apply(estimate_density_function_by_window)
+    session["neuron2de"] = session["neuron2"].apply(estimate_density_function_by_window)
 
 
 def add_statistical_differences_to_session(session: dict) -> None:
-    df = session["neuron1pdf"] - session["neuron2pdf"]
+    df = session["neuron1de"] - session["neuron2de"]
     df = df.abs()
     df = df / df.mean()
     session["statisticaldifferences"] = df
 
 
-def add_shuffled_pdf_and_statistical_differences_to_session(session: dict) -> None:
-    session["neuron1pdfshuffled"] = session["neuron1pdf"]
-    for col in session["neuron1pdf"].columns:
-        session["neuron1pdfshuffled"][col] = session["neuron1pdf"].sample(axis=1)
-    df = session["neuron1pdfshuffled"] - session["neuron2pdf"]
+def add_shuffled_de_and_statistical_differences_to_session(session: dict) -> None:
+    session["neuron1deshuffled"] = session["neuron1de"].copy(deep=True)
+    for col in session["neuron1de"].columns:
+        session["neuron1deshuffled"][col] = session["neuron1de"].sample(axis=1)
+    df = session["neuron1deshuffled"] - session["neuron2de"]
     df = df.abs()
     df = df / df.mean()
     session["statisticaldifferencesshuffled"] = df
@@ -32,7 +31,7 @@ def remove_session_resuls_without_parameters(session: dict) -> None:
 
 
 def shift_session_by_signal_onset(experiment: dict, length=300) -> dict:
-    cols_to_shift = ["neuron1", "neuron2", "neuron1pdf", "neuron2pdf"]
+    cols_to_shift = ["neuron1", "neuron2", "neuron1de", "neuron2de"]
     for i in range(len(experiment["params"]["SignalOn"])):
         offset = experiment["params"]["SignalOn"][i].astype(np.int)
         for col in cols_to_shift:
@@ -51,26 +50,25 @@ def remove_null_trials_from_session(session: dict) -> None:
 
 def add_feature_matrix_to_session(session: dict) -> None:
     df = session["statisticaldifferences"].describe().T
-    print(df)
     df.index.name = "Trial"
     df = df.drop("count", axis=1)
     df.columns = ["distance-" + x for x in df.columns]
     df["session"] = session["params"]["Session"]
     df["distance-skew"] = session["statisticaldifferences"].skew()
-    df["correlation"] = get_pairwise_corr_between_two_dataframes(session["neuron1pdf"], session["neuron2pdf"])
+    df["correlation"] = get_pairwise_corr_between_two_dataframes(session["neuron1de"], session["neuron2de"])
     df["correlation-abs"] = df["correlation"].abs()
     df["label"] = session["params"]["LeverSuccess"][:]
     session["features"] = df
 
+
 def add_shuffled_feature_matrix_to_session(session: dict) -> None:
     df = session["statisticaldifferencesshuffled"].describe().T
-    print(df)
     df.index.name = "Trial"
     df = df.drop("count", axis=1)
     df.columns = ["distance-" + x for x in df.columns]
     df["session"] = session["params"]["Session"]
     df["distance-skew"] = session["statisticaldifferencesshuffled"].skew()
-    df["correlation"] = get_pairwise_corr_between_two_dataframes(session["neuron1pdfshuffled"], session["neuron2pdf"])
+    df["correlation"] = get_pairwise_corr_between_two_dataframes(session["neuron1deshuffled"], session["neuron2de"])
     df["correlation-abs"] = df["correlation"].abs()
     df["label"] = session["params"]["LeverSuccess"][:]
     session["featuresshuffled"] = df
@@ -90,12 +88,10 @@ def add_lever_values_to_session(session: dict) -> None:
 
 def add_full_session_values(session: dict) -> None:
     remove_session_resuls_without_parameters(session)
-    add_pdfs_to_session(session)
+    add_des_to_session(session)
     shift_session_by_signal_onset(session)
     add_statistical_differences_to_session(session)
-    add_shuffled_pdf_and_statistical_differences_to_session(session)
+    add_shuffled_de_and_statistical_differences_to_session(session)
     add_lever_values_to_session(session)
     add_feature_matrix_to_session(session)
     add_shuffled_feature_matrix_to_session(session)
-
-

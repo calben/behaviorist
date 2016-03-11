@@ -1,15 +1,14 @@
 import pandas as pd
-import numpy as np
 from scipy import signal
 
 
 def estimate_density_function_by_window(a: pd.Series, window=None, bandwidth=None) -> pd.Series:
     if window is None:
-        window = signal.parzen
+        window = signal.boxcar
     if bandwidth is None:
-        bandwidth = 30
-    window = window(bandwidth)
-    estimate = signal.convolve(a, window, mode="same")
+        bandwidth = 11
+    # note same is centered, full is feed forward
+    estimate = signal.convolve(a, window(bandwidth), mode="same")
     return estimate
 
 

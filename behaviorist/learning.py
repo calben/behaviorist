@@ -1,44 +1,14 @@
+import numpy as np
 import pandas as pd
+import sklearn.metrics
+from sklearn import cross_validation
 from sklearn import svm
 from sklearn.cross_validation import KFold
-from sklearn import cross_validation, linear_model
-import sklearn.metrics
-import numpy as np
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-
-
-def load_feature_matrix_for_ml(csv: str) -> dict:
-    df = pd.read_csv(csv, index_col=0)
-    df = filter_feature_matrix(df)
-
-    data = {}
-    data["target"] = df["label"].values
-    data["features"] = df.drop("label", axis=1).values
-    return data
-
-
-def filter_feature_matrix(mat: pd.DataFrame, balance_input=True) -> pd.DataFrame:
-    mat = mat.dropna(axis=0)
-    mat = mat[mat["distance-mean"] != 0]
-    if balance_input:
-        mat_pos = mat[mat["label"] == 1]
-        mat_neg = mat[mat["label"] == 0]
-        print(len(mat_pos), "positive samples")
-        print(len(mat_neg), "negative samples")
-        if len(mat_pos) >= len(mat_neg):
-            mat_pos = mat_pos.sample(len(mat_neg))
-        else:
-            mat_neg = mat_neg.sample(len(mat_pos))
-    mat = pd.concat([mat_pos, mat_neg])
-    mat = mat.reset_index(drop=True)
-    mat = mat[["label", "distance-std", "distance-25%", "distance-75%", "correlation-abs"]]
-    return mat
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 
 
 def run_cross_validation(data: dict):
@@ -76,11 +46,10 @@ def run_k_cross_validation(data: dict):
 
 
 def test_all_algorithms(test_name: str, data: dict, output="summary"):
-    names = ["Linear SVM", "Decision Tree", "Naive Bayes", "Linear Discriminant Analysis",
+    names = ["Decision Tree", "Naive Bayes", "Linear Discriminant Analysis",
              "Quadratic Discriminant Analysis"]
 
     classifiers = [
-        SVC(kernel="linear", C=1),
         DecisionTreeClassifier(max_depth=5),
         GaussianNB(),
         LinearDiscriminantAnalysis(),

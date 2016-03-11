@@ -6,13 +6,13 @@ from behaviorist.plotting import *
 class TestSession(TestCase):
 
     def test_add_feature_matrix_to_session(self):
-        experiment = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
+        experiment = load_session("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
         shift_session_by_signal_onset(experiment)
         assert(True)
 
 
     def test_shift_session_by_signal_onset(self):
-        experiment = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
+        experiment = load_session("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
         shift_session_by_signal_onset(experiment)
         assert(True)
 
@@ -26,7 +26,7 @@ class TestSession(TestCase):
 
 
     def test_add_full_session_values(self):
-        session = load_experiment_with_params_to_dataframe("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
+        session = load_session("C:/Users/Calem Bendell/Google Drive/Cogs 401/", "01")
         add_full_session_values(session)
         session["leverdelay"].to_csv("session/leverdelay.csv")
         session["leversuccess"].to_csv("session/leversuccess.csv")
